@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-const exhbs = require('express-handlebars');
+const bodyParser = require('body-parser');
 const path = require('path');
-const homeRoute = require('./routes/home');
-const addRoute = require('./routes/add');
-const coursesRoute = require('./routes/courses');
-const cardRoute = require('./routes/card');
+const exhbs = require('express-handlebars');
+const mongoose = require('mongoose');
+const routes = require('./routes');
+const User = require('./models/user');
 
 const hbs = exhbs.create({
     defaultLayout: 'main',
@@ -16,17 +16,44 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', 'views');
 
+app.use(async (req, res, next) => {
+    try {
+        user = await user.findById('user id can network');
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({extended: true}));
-
-app.use('/', homeRoute);
-app.use('/add', addRoute);
-app.use('/courses', coursesRoute);
-app.use('/card', cardRoute);
-
+app.use(bodyParser.urlencoded({extended: false}));
+routes(app);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
-});
+async function start() {
+    try {
+        const url = 'mongodb+srv://yaroslav:3fhxm78vmHGXlV30@courses-kbbgx.mongodb.net/shop';
+        await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+
+        const candidate = await User.findOne();
+        if (!candidate) {
+            const user = new User({
+                email: 'wow1996strap@gmail.com',
+                name: 'Yaroslav',
+                cart: {items: []}
+            });
+
+            await user.save();
+        }
+        app.listen(PORT, () => {
+            console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+start();

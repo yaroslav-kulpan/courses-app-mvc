@@ -18,8 +18,12 @@
                 <label for="image">Image URL</label>
                 <span class="helper-text" data-error="!wrong" data-success="right"></span>
             </div>
-            <input type="hidden" name="id" value="{{course.id}}" >
+            <input type="hidden" name="id" value="{{course.id}}">
         </div>
         <button type="submit" class="btn btn-primary">Edit courses</button>
+    </form>
+    <form action="/courses/remove" method="POST">
+        <input type="hidden" name="id" value="{{ course.id }}">
+        <button type="submit" class="btn red">Remove course</button>
     </form>
 </div>
