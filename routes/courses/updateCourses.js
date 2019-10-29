@@ -1,7 +1,7 @@
 const Course = require('../../models/course');
 
 module.exports = (app) => {
-    app.get('/:id/edit', async (req, res) => {
+    app.get('/courses/:id/edit', async (req, res) => {
         if (!req.query.allow) {
             return res.redirect('/');
         }
@@ -13,7 +13,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/edit', async (req, res) => {
+    app.post('/courses/edit', async (req, res) => {
         const {id} = req.body;
         delete req.body.id;
         await Course.findByIdAndUpdate(id, req.body);

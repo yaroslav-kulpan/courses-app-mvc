@@ -8,7 +8,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/', async (req, res) => {
+    app.post('/add', async (req, res) => {
         const course = new Course({
             title: req.body.title,
             price: req.body.price,

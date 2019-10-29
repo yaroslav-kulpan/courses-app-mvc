@@ -18,8 +18,7 @@ app.set('views', 'views');
 
 app.use(async (req, res, next) => {
     try {
-        user = await user.findById('user id can network');
-        req.user = user;
+        req.user = await User.findById('5db729e3c1dd3f23fca5e49d');
         next();
     } catch (error) {
         console.error(error);
@@ -35,9 +34,14 @@ const PORT = process.env.PORT || 3000;
 async function start() {
     try {
         const url = 'mongodb+srv://yaroslav:3fhxm78vmHGXlV30@courses-kbbgx.mongodb.net/shop';
-        await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+        await mongoose.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false
+        });
 
         const candidate = await User.findOne();
+
         if (!candidate) {
             const user = new User({
                 email: 'wow1996strap@gmail.com',
@@ -47,6 +51,7 @@ async function start() {
 
             await user.save();
         }
+
         app.listen(PORT, () => {
             console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
         });
@@ -55,5 +60,6 @@ async function start() {
         console.error(error);
     }
 }
+
 
 start();
