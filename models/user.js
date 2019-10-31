@@ -12,7 +12,7 @@ const userSchema = new Schema({
     cart: {
         items: [
             {
-                count: {
+                counter: {
                     type: Number,
                     required: true,
                     default: 1,
@@ -29,20 +29,42 @@ const userSchema = new Schema({
 
 userSchema.methods.addToCart = function (course) {
     const items = [...this.cart.items];
+
     const idx = items.findIndex(items => {
         return items.courseId.toString() === course._id.toString();
     });
-    if (idx => 0) {
-        items[idx].count = items[idx].count + 1
+
+    if (idx >= 0) {
+        items[idx].counter = items[idx].counter + 1
     } else {
         items.push({
-            courseId: course,
-            count: 1,
+            courseId: course._id,
+            counter: 1,
         })
     }
 
     this.cart = {items};
+    return this.save();
+};
 
+userSchema.methods.removeFromCart = function (id) {
+    let items = [...this.cart.items];
+    const idx = items.findIndex((items) => {
+        return items.courseId.toString() === id.toString();
+    });
+
+    if (items[idx].counter === 1) {
+        items = items.filter(c => c.courseId.toString() !== id.toString())
+    } else {
+        items[idx].counter--
+    }
+
+    this.cart = {items};
+    return this.save();
+};
+
+userSchema.methods.clearCart = function () {
+    this.cart = {items: []};
     return this.save();
 };
 

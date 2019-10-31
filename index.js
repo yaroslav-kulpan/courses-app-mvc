@@ -18,8 +18,9 @@ app.set('views', 'views');
 
 app.use(async (req, res, next) => {
     try {
-        req.user = await User.findById('5db729e3c1dd3f23fca5e49d');
-        next();
+        // req.user = await User.findById('5db729e3c1dd3f23fca5e49d');
+        req.user = await User.findById('5db94aa418d9552bb0b260f6');
+        await next();
     } catch (error) {
         console.error(error);
     }
@@ -33,7 +34,8 @@ const PORT = process.env.PORT || 3000;
 
 async function start() {
     try {
-        const url = 'mongodb+srv://yaroslav:3fhxm78vmHGXlV30@courses-kbbgx.mongodb.net/shop';
+        // const url = 'mongodb+srv://yaroslav:3fhxm78vmHGXlV30@courses-kbbgx.mongodb.net/shop';
+        const url = 'mongodb://@localhost:27017/shop';
         await mongoose.connect(url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
