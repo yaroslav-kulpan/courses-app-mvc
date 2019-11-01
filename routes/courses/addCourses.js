@@ -1,14 +1,14 @@
 const Course = require('../../models/course');
-
+const auth = require('../../middlewares/auth');
 module.exports = (app) => {
-    app.get('/add', (req, res) => {
+    app.get('/add', auth,(req, res) => {
         res.render('add', {
             title: 'Add courses',
             isAdd: true,
         });
     });
 
-    app.post('/add', async (req, res) => {
+    app.post('/add', auth, async (req, res) => {
         const course = new Course({
             title: req.body.title,
             price: req.body.price,

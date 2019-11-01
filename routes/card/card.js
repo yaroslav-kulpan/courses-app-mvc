@@ -1,4 +1,5 @@
 const Course = require('../../models/course');
+const auth = require('../../middlewares/auth');
 
 module.exports = (app) => {
     function mapCartItems(cart) {
@@ -15,13 +16,13 @@ module.exports = (app) => {
         }, 0)
     }
 
-    app.post('/card/add', async (req, res) => {
+    app.post('/card/add', auth, async (req, res) => {
         const course = await Course.findById(req.body.id);
         await req.user.addToCart(course);
         res.redirect('/card');
     });
 
-    app.delete('/card/remove/:id', async (req, res) => {
+    app.delete('/card/remove/:id', auth, async (req, res) => {
         await req.user.removeFromCart(req.params.id);
         const user = await req.user.populate('cart.items.courseId').execPopulate();
         const courses = mapCartItems(user.cart);
@@ -33,7 +34,7 @@ module.exports = (app) => {
         res.status(200).json(cart);
     });
 
-    app.get('/card', async (req, res) => {
+    app.get('/card', auth, async (req, res) => {
         const user = await req.user.populate('cart.items.courseId').execPopulate();
 
         const courses = mapCartItems(user.cart);

@@ -1,18 +1,27 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
+const csrf = require('csurf');
 const exhbs = require('express-handlebars');
+const flesh = require('connect-flash');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongodb-session')(session);
 const routes = require('./routes');
-const User = require('./models/user');
 const varMidlleWares = require('./middlewares/variables');
-
+const userMidlleWares = require('./middlewares/user');
+const MONGODB_STORE_URI = 'mongodb://@localhost:27017/shop';
+const app = express();
 const hbs = exhbs.create({
     defaultLayout: 'main',
     extname: 'hbs'
 });
+
+const store = new MongoStore({
+    collection: 'sessions',
+    uri: MONGODB_STORE_URI
+});
+
 
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
@@ -25,9 +34,13 @@ app.use(session({
     secret: 'some secret value',
     resave: false,
     saveUninitialized: false,
+    store,
 }));
 
+app.use(csrf());
+app.use(flesh());
 app.use(varMidlleWares);
+app.use(userMidlleWares);
 
 routes(app);
 
@@ -36,8 +49,7 @@ const PORT = process.env.PORT || 3000;
 async function start() {
     try {
         // const url = 'mongodb+srv://yaroslav:3fhxm78vmHGXlV30@courses-kbbgx.mongodb.net/shop';
-        const url = 'mongodb://@localhost:27017/shop';
-        await mongoose.connect(url, {
+        await mongoose.connect(MONGODB_STORE_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false

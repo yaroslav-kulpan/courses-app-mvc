@@ -1,7 +1,8 @@
 const Course = require('../../models/course');
+const auth = require('../../middlewares/auth');
 
 module.exports = (app) => {
-    app.get('/courses/:id/edit', async (req, res) => {
+    app.get('/courses/:id/edit', auth, async (req, res) => {
         if (!req.query.allow) {
             return res.redirect('/');
         }
@@ -13,7 +14,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/courses/edit', async (req, res) => {
+    app.post('/courses/edit', auth, async (req, res) => {
         const {id} = req.body;
         delete req.body.id;
         await Course.findByIdAndUpdate(id, req.body);
