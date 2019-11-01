@@ -13,7 +13,7 @@ module.exports = (app) => {
             title: req.body.title,
             price: req.body.price,
             image: req.body.image,
-            userId: req.user,
+            userId: '5db729e3c1dd3f23fca5e49d',
         });
 
         try {

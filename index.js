@@ -4,8 +4,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const exhbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const session = require('express-session');
 const routes = require('./routes');
 const User = require('./models/user');
+const varMidlleWares = require('./middlewares/variables');
 
 const hbs = exhbs.create({
     defaultLayout: 'main',
@@ -16,18 +18,17 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', 'views');
 
-app.use(async (req, res, next) => {
-    try {
-        // req.user = await User.findById('5db729e3c1dd3f23fca5e49d');
-        req.user = await User.findById('5db94aa418d9552bb0b260f6');
-        await next();
-    } catch (error) {
-        console.error(error);
-    }
-});
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(session({
+    secret: 'some secret value',
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use(varMidlleWares);
+
 routes(app);
 
 const PORT = process.env.PORT || 3000;
@@ -41,19 +42,6 @@ async function start() {
             useUnifiedTopology: true,
             useFindAndModify: false
         });
-
-        const candidate = await User.findOne();
-
-        if (!candidate) {
-            const user = new User({
-                email: 'wow1996strap@gmail.com',
-                name: 'Yaroslav',
-                cart: {items: []}
-            });
-
-            await user.save();
-        }
-
         app.listen(PORT, () => {
             console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
         });
